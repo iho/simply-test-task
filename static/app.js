@@ -33,19 +33,18 @@ basicChat.controller('MainController', ['$scope', '$http', function($scope, $htt
 }])
 
 basicChat.controller('ChatController', ['$routeParams', '$scope', '$http', function($routeParams, $scope, $http) {
-    console.log($routeParams, $routeParams.roomId, document.username);
     $http.get('http://0.0.0.0:8080/admins').then(function(response) {
         $scope.admins = response.data;
     })
     $scope.checkIfAdmin = function(username) {
         if ($scope.admins.indexOf(username) > -1) {
-            console.log(username, $scope.admins.indexOf(username) > -1);
             return true;
         }
         return false;
     }
 
     var username = document.username || 'username' + Math.floor((Math.random() * 10) + 1);
+    var password = document.password;
     var ws = new ReconnectingWebSocket('ws://0.0.0.0:8080/ws');
     $http.get('http://0.0.0.0:8080/message/' + $routeParams.roomId).then(function(response) {
         $scope.messages = response.data;
@@ -66,10 +65,6 @@ basicChat.controller('ChatController', ['$routeParams', '$scope', '$http', funct
                 "username": username,
                 "text": $scope.textbox
             })
-            .then(function(response) {
-                console.log('message sent')
-            })
-
         $scope.status = "sending";
         $scope.textbox = "";
         setTimeout(function() {
@@ -93,8 +88,7 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
         var room = {};
         room.name = $scope.name;
         room.theme = $scope.theme;
-        room.password = 'password' // TODO
-        console.log(room);
+        room.password = password;
         $http.post('http://0.0.0.0:8080/room', room).then(function() {
             $scope.name = '';
             $scope.theme = '';
@@ -105,7 +99,7 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
 
         $http.delete('http://0.0.0.0:8080/room/' + id, {
             'data': JSON.stringify({
-                'password': 'password'
+                'password': password
             })
         }).then(function() {
             updateRooms()

@@ -1,13 +1,14 @@
-from aiohttp import web
-from aiohttp.web import Response, WebSocketResponse, WSMsgType
-import db 
 import json
 
+from aiohttp import web
+from aiohttp.web import Response, WebSocketResponse, WSMsgType
+
+import db
+
 async def send_message(request):
-    id = int(request.match_info['id'])
     data = await request.json()
     data = {field: data[field] for field in ['username', 'text']}
-    data['room_id'] = id
+    data['room_id'] = int(request.match_info['id'])
     resp = await db.create_message(request.app['db_pool'], data)
     resp['ts'] = resp['ts'].isoformat()
     data.update(resp)
@@ -17,9 +18,8 @@ async def send_message(request):
     return web.json_response(data)
 
 async def get_messages(request):
-    id = int(request.match_info['id']) 
-    messages = await db.get_room_messages(request.app['db_pool'], id)
-    for message  in messages:
+    messages = await db.get_room_messages(request.app['db_pool'], int(request.match_info['id']))
+    for message in messages:
         message['ts'] = message['ts'].isoformat()
     messages.reverse()
     return web.json_response(messages)
@@ -51,6 +51,7 @@ async def wshandler(request):
         print('Someone disconnected.')
         for ws in request.app['sockets']:
             ws.send_str('Someone disconnected.')
+
 
 def add_routers(app):
     app.router.add_post('/message/{id}', send_message)

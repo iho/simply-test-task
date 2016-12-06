@@ -1,5 +1,7 @@
 import json
+
 config = json.load(open('config.json', 'r'))
+
 
 def is_admin(data):
     password = data.get("password")
@@ -10,6 +12,6 @@ def is_admin(data):
             return True
     return False
 
+
 def get_admin_logins():
-    return [ admin['login'] for admin in config['admins']]
- 
+    return [admin['login'] for admin in config['admins']]

@@ -1,16 +1,13 @@
-import json
 import os
 
-import psycopg2
-
-from aiohttp import web
-import room_handlers
-import message_handlers
-
-
 import aiopg
+import psycopg2
+from aiohttp import web
+
 import asyncio
 import db
+import message_handlers
+import room_handlers
 
 async def init(app):
     app['sockets'] = []
@@ -23,7 +20,6 @@ async def init(app):
     app['db_pool'] = pool
 
     await db.create_tables(pool)
-
 
 
 async def finish(app):

@@ -1,0 +1,26 @@
+<div class="chat-container">
+  <div class="chat-messages">
+    <div class="chat-header">
+      <div class="angularjs-chat-logo"></div>
+      AngularJS Chat
+    </div>
+    <div ng-repeat="message in messages track by $index">
+      <div class="sent-message-{{ message.self }}">
+        <span class="username" 
+                  ng-style="checkIfAdmin(message.username) && {'color': 'red'}"
+          >{{ message.username }}:</span>
+        {{ message.text }}
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+
+  <form ng-submit="send()" class="chat-input">
+    <input type="text" ng-model="textbox" autofocus>
+    <input type="submit" class="send-icon" value=" ">
+    <input type="submit" value=" "
+                         class="sent-indicator {{ status }}">
+  </form>
+
+</div>
+

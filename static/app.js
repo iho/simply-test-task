@@ -1,6 +1,10 @@
 'use strict';
+var url = window.location.hostname;
+if (window.location.port) {
+    url = url + ':' + window.location.port
+}
 
-var basicChat = angular.module('BasicChat', ['chat', 'ngRoute']);
+var basicChat = angular.module('BasicChat', ['ngRoute']);
 basicChat.config(function($routeProvider) {
     $routeProvider
         .when("/", {
@@ -33,7 +37,7 @@ basicChat.controller('MainController', ['$scope', '$http', function($scope, $htt
 }])
 
 basicChat.controller('ChatController', ['$routeParams', '$scope', '$http', function($routeParams, $scope, $http) {
-    $http.get('http://0.0.0.0:8080/admins').then(function(response) {
+    $http.get('http://' + url + '/admins').then(function(response) {
         $scope.admins = response.data;
     })
     $scope.checkIfAdmin = function(username) {
@@ -44,27 +48,29 @@ basicChat.controller('ChatController', ['$routeParams', '$scope', '$http', funct
     }
 
     var username = document.username || 'username' + Math.floor((Math.random() * 10) + 1);
-    var password = document.password;
-    var ws = new ReconnectingWebSocket('ws://0.0.0.0:8080/ws');
-    $http.get('http://0.0.0.0:8080/message/' + $routeParams.roomId).then(function(response) {
+    var ws = new ReconnectingWebSocket('ws://' + url + '/ws');
+    $http.get('http://' + url + '/message/' + $routeParams.roomId).then(function(response) {
         $scope.messages = response.data;
     });
 
     $scope.status = "";
     ws.onmessage = function(evt) {
-        $scope.messages.push(JSON.parse(evt.data));
-        setTimeout(function() {
-            chatmessages.scrollTop = chatmessages.scrollHeight;
-        }, 10);
+        var message = JSON.parse(evt.data);
+        if (message.room_id == $routeParams.roomId) {
+            $scope.messages.push(message);
+            setTimeout(function() {
+                chatmessages.scrollTop = chatmessages.scrollHeight;
+            }, 10);
+        }
     };
 
     var chatmessages = document.querySelector(".chat-messages");
 
     $scope.send = function() {
-        $http.post('http://0.0.0.0:8080/message/' + $routeParams.roomId, {
-                "username": username,
-                "text": $scope.textbox
-            })
+        $http.post('http://' + url + '/message/' + $routeParams.roomId, {
+            "username": username,
+            "text": $scope.textbox
+        })
         $scope.status = "sending";
         $scope.textbox = "";
         setTimeout(function() {
@@ -76,6 +82,7 @@ basicChat.controller('ChatController', ['$routeParams', '$scope', '$http', funct
 
 
 basicChat.controller('RoomsController', ['$http', '$scope', function($http, $scope) {
+    var password = document.password;
 
     var updateRooms = function() {
         $http.get('http://0.0.0.0:8080/room').then(function(response) {

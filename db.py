@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS public.message
 (
    id SERIAL PRIMARY KEY,
    username VARCHAR(255),
-   room_id INT NOT NULL REFERENCES room(id),
+   room_id INT NOT NULL REFERENCES room(id) ON DELETE CASCADE,
    text TEXT,
    ts TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc')
 )'''

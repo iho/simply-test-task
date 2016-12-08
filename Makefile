@@ -1,6 +1,12 @@
-default: setup_db cli
+default: setup_db install run
+
 setup_db: 
 	sudo -u postgres psql -f setup_db.sql
+	alembic upgrade head 
+
+install:
+	pip install -r requirements.txt
+
 run:
 	python app.py
 

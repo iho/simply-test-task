@@ -25,11 +25,11 @@ basicChat.controller('MainController', ['$scope', '$http', function($scope, $htt
     $scope.Submit = function() {
         document.username = $scope.username;
         document.password = $scope.password;
-        $http.get('http://0.0.0.0:8080/admins').then(function(response) {
+        $http.get('http://' + url + '/admins').then(function(response) {
             if (response.data, response.data.indexOf($scope.username) > -1) {
                 $scope.showEdit = true;
             }
-            $http.get('http://0.0.0.0:8080/room').then(function(response) {
+            $http.get('http://' + url + '/room').then(function(response) {
                 $scope.rooms = response.data;
             })
         })
@@ -85,7 +85,7 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
     var password = document.password;
 
     var updateRooms = function() {
-        $http.get('http://0.0.0.0:8080/room').then(function(response) {
+        $http.get('http://' + url + '/room').then(function(response) {
             $scope.rooms = response.data;
         });
     }
@@ -96,7 +96,7 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
         room.name = $scope.name;
         room.theme = $scope.theme;
         room.password = password;
-        $http.post('http://0.0.0.0:8080/room', room).then(function() {
+        $http.post('http://' + url + '/room', room).then(function() {
             $scope.name = '';
             $scope.theme = '';
             updateRooms()
@@ -104,7 +104,7 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
     }
     $scope.removeItem = function(id) {
 
-        $http.delete('http://0.0.0.0:8080/room/' + id, {
+        $http.delete('http://' + url + '/room/' + id, {
             'data': JSON.stringify({
                 'password': password
             })
@@ -114,3 +114,5 @@ basicChat.controller('RoomsController', ['$http', '$scope', function($http, $sco
     }
 
 }]);
+
+

@@ -1,35 +1,3 @@
-create_room_table_query = '''
-CREATE TABLE IF NOT EXISTS public.room
-(
-    id SERIAL PRIMARY KEY NOT NULL,
-	name VARCHAR(300),
-	theme TEXT
-)
-'''
-
-create_message_table_query = '''
-CREATE TABLE IF NOT EXISTS public.message
-(
-   id SERIAL PRIMARY KEY,
-   username VARCHAR(255),
-   room_id INT NOT NULL REFERENCES room(id) ON DELETE CASCADE,
-   text TEXT,
-   ts TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc')
-)'''
-async def create_tables(pool):
-    async with pool.acquire() as conn:
-        cur = await conn.cursor()
-        await cur.execute(create_room_table_query)
-        await cur.execute(create_message_table_query)
-
-
-async def get_rooms(pool):
-    async with pool.acquire() as conn:
-        cur = await conn.cursor()
-        await cur.execute('SELECT * FROM public.room')
-        return await cur.fetchall()
-
-
 async def get_room_messages(pool, room_id):
     query = '''
     SELECT * FROM public.message WHERE room_id=%(id)s ORDER BY ts DESC LIMIT 100;

@@ -19,8 +19,6 @@ async def init(app):
                                    echo=True)
     app['db_pool'] = pool
 
-    await db.create_tables(pool)
-
 
 async def finish(app):
     for ws in app['sockets']:
